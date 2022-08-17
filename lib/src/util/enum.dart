@@ -1,0 +1,1 @@
+enum AniProps { opacity, translateY }
