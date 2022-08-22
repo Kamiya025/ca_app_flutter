@@ -5,6 +5,7 @@ import 'package:ca_app_flutter/src/home/radarchart_view.dart';
 import 'package:ca_app_flutter/src/model/allT_tckets_status.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletons/skeletons.dart';
 import '../model/data_type_request.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -25,14 +26,10 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-
   @override
   void initState() {
     super.initState();
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -78,39 +75,49 @@ class _MyHomePageState extends State<MyHomePage> {
                         color: Colors.white),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  child: StreamBuilder(
-                      stream: homeViewModel.allTicketsStatusStream,
-                      builder: (context,AsyncSnapshot<AllTicketsStatus>  snapshot) {
-                        switch (snapshot.connectionState) {
-                          case ConnectionState.waiting:
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          default:
-                            if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              return RadarChartView(
-                                  dataTypeRequest:
-                                      DataTypeRequest.fromRequests(snapshot.data!.status!),
-                                  callBack: (i) {
-                                    if (i >= 0) {
-                                      buttonCarouselController.animateToPage(i);
-                                    }
-                                  });
-                            }
-                        }
-                      }),
-                ),
                 Column(
                   children: [
-                   StreamBuilder(
+                    StreamBuilder(
                         stream: homeViewModel.allTicketsStatusStream,
-                        builder: (context, AsyncSnapshot<AllTicketsStatus> snapshot) {
+                        builder: (context,
+                            AsyncSnapshot<AllTicketsStatus> snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.waiting:
-                              return const CircularProgressIndicator();
+                              return const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(20.0),
+                                  child: SkeletonAvatar(
+                                    style: SkeletonAvatarStyle(
+                                        shape: BoxShape.circle,
+                                        height: 200,
+                                        width: 200),
+                                  ),
+                                ),
+                              );
+                            default:
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                return RadarChartView(
+                                    dataTypeRequest:
+                                        DataTypeRequest.fromRequests(
+                                            snapshot.data!.status!),
+                                    callBack: (i) {
+                                      if (i >= 0) {
+                                        buttonCarouselController
+                                            .animateToPage(i);
+                                      }
+                                    });
+                              }
+                          }
+                        }),
+                    StreamBuilder(
+                        stream: homeViewModel.allTicketsStatusStream,
+                        builder: (context,
+                            AsyncSnapshot<AllTicketsStatus> snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                              return _linesView();
                             default:
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
@@ -153,9 +160,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         children: [
                                                           Text(
                                                             item.statusName!,
-                                                            style: const TextStyle(
-                                                                fontSize: 15,
-                                                                color: Color.fromRGBO(149, 170, 201, 1.0),
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 15,
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      149,
+                                                                      170,
+                                                                      201,
+                                                                      1.0),
                                                             ),
                                                           ),
                                                           Container(
@@ -236,13 +249,57 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.indigo,
-          elevation: 15,
-          onPressed: () {},
-          child: const Icon(
-            Icons.add,
-            size: 40,
+        // floatingActionButton: FloatingActionButton(
+        //   backgroundColor: Colors.indigo,
+        //   elevation: 15,
+        //   onPressed: () {},
+        //   child: const Icon(
+        //     Icons.add,
+        //     size: 40,
+        //   ),
+        // ),
+      ),
+    );
+  }
+
+  Widget _linesView() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonLine(
+                    style: SkeletonLineStyle(
+                        borderRadius: BorderRadius.circular(8),
+                        height: 18,
+                        width: 200,
+                        maxLength: 20),
+                  ),
+                  SkeletonLine(
+                    style: SkeletonLineStyle(
+                        borderRadius: BorderRadius.circular(8),
+                        padding: const EdgeInsets.only(top: 10, left: 0),
+                        height: 35,
+                        width: 80,
+                        maxLength: 20),
+                  ),
+                ],
+              ),
+              const SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                    shape: BoxShape.rectangle, height: 52, width: 42),
+              ),
+            ],
           ),
         ),
       ),
