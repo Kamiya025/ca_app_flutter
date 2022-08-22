@@ -41,7 +41,10 @@ dependencies:
   localstorage: ^4.0.0+1
   flutter_native_splash: ^2.2.7
   fl_chart: ^0.55.1
-
+  card_swiper: ^2.0.4
+  carousel_slider: ^4.1.1
+  skeletons: ^0.0.3
+  rxdart: ^0.27.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

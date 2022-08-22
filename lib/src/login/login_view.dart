@@ -52,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
       title: '',
       logo: const AssetImage("assets/fpt_logo.png"),
       footer: "",
+      userType: LoginUserType.name,
       hideForgotPasswordButton: true,
       theme: LoginTheme(
         pageColorLight: const Color.fromRGBO(255, 255, 255, 1),
@@ -63,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         cardInitialHeight: 200,
       ),
-      userValidator: (value) {},
+      userValidator: (value) { return null;},
       onLogin: _authUser,
       onSubmitAnimationCompleted: () {
         Navigator.pushReplacement(
