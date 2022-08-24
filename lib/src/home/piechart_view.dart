@@ -2,17 +2,19 @@ import 'package:ca_app_flutter/src/model/request.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../constant/constant_card_empty_data.dart';
 import 'indicator.dart';
 
-class PieChartSample2 extends StatefulWidget {
-  const PieChartSample2({Key? key, required this.data}) : super(key: key);
+class PieChartView extends StatefulWidget {
+  const PieChartView({Key? key, required this.data}) : super(key: key);
   final List<Requests> data;
 
   @override
-  State<StatefulWidget> createState() => PieChart2State();
+  State<StatefulWidget> createState() => PieChartState();
+
 }
 
-class PieChart2State extends State<PieChartSample2> {
+class PieChartState extends State<PieChartView> {
   int touchedIndex = -1;
   final colorList = [
     const Color(0xff0293ee),
@@ -22,82 +24,59 @@ class PieChart2State extends State<PieChartSample2> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        color: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
-              decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.blueAccent)),
-              ),
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                "Requests",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+    return
+      cardData("Requests",child: Padding(
+        padding: const EdgeInsets.only(top: 10.0, bottom: 10),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: PieChart(
+                  PieChartData(
+                      pieTouchData: PieTouchData(touchCallback:
+                          (FlTouchEvent event, pieTouchResponse) {
+                        setState(() {
+                          if (!event.isInterestedForInteractions ||
+                              pieTouchResponse == null ||
+                              pieTouchResponse.touchedSection == null) {
+                            touchedIndex = -1;
+                            return;
+                          }
+                          touchedIndex = pieTouchResponse
+                              .touchedSection!.touchedSectionIndex;
+                        });
+                      }),
+                      borderData: FlBorderData(
+                        show: false,
+                      ),
+                      sectionsSpace: 1,
+                      centerSpaceRadius: 30,
+                      sections: showingSections()),
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: PieChart(
-                        PieChartData(
-                            pieTouchData: PieTouchData(touchCallback:
-                                (FlTouchEvent event, pieTouchResponse) {
-                              setState(() {
-                                if (!event.isInterestedForInteractions ||
-                                    pieTouchResponse == null ||
-                                    pieTouchResponse.touchedSection == null) {
-                                  touchedIndex = -1;
-                                  return;
-                                }
-                                touchedIndex = pieTouchResponse
-                                    .touchedSection!.touchedSectionIndex;
-                              });
-                            }),
-                            borderData: FlBorderData(
-                              show: false,
-                            ),
-                            sectionsSpace: 1,
-                            centerSpaceRadius: 30,
-                            sections: showingSections()),
-                      ),
-                    ),
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:[
-                    for(int i=0; i< widget.data.length;i++)
-                      Indicator(
+            Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:[
+                  for(int i=0; i< widget.data.length;i++)
+                    Indicator(
                       color: colorList[i],
                       text: widget.data[i].requestName!,
                       isSquare: true,
                     ),]
 
-    ),
+            ),
 
-                  const SizedBox(
-                    width: 30,
-                  ),
-                ],
-              ),
+            const SizedBox(
+              width: 30,
             ),
           ],
         ),
-      ),
-    );
+      ));
+
   }
 
   List<PieChartSectionData> showingSections() {

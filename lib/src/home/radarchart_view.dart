@@ -54,7 +54,9 @@ class _RadarChartViewState extends State<RadarChartView> {
               titlePositionPercentageOffset: 0.08,
               titleTextStyle: const TextStyle(color: titleColor, fontSize: 10),
               getTitle: (index, angle) {
-                String title = widget.dataTypeRequest.titles[index];
+                String title =
+                    widget.dataTypeRequest.titles.length>index?
+                widget.dataTypeRequest.titles[index]:"";
                 return RadarChartTitle(
                     text: title, angle: (angle == 180) ? 0 : angle);
               },

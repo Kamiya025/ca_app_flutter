@@ -1,4 +1,3 @@
-
 import 'package:ca_app_flutter/src/tickets/tickets_viewmodel.dart';
 import 'package:ca_app_flutter/src/model/all_tickets_status.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:ca_app_flutter/src/tickets/skeleton_tickets.dart';
 import '../constant/constamt_backgrond.dart';
 import '../constant/request_type_color.dart';
 import '../model/detail.dart';
+import '../model/ticket.dart';
 
 class TicketsPage extends StatefulWidget {
   const TicketsPage({Key? key, required this.title}) : super(key: key);
@@ -81,15 +81,21 @@ class _TicketsPageState extends State<TicketsPage> {
                         if (snapshot.hasError) {
                           return Text('Error: ${snapshot.error}');
                         } else {
-                          var listDeteils = snapshot.data?.tickets!
-                              .firstWhere(
-                                  (element) => element.type == widget.title)
-                              .details;
+                          Tickets? varA = snapshot.data?.tickets?.firstWhere(
+                              (element) => element.type == widget.title,
+                              orElse: () {
+                            print('No matching element.');
+                            return Tickets();
+                          });
+                          List<Details>? listDeteils = varA?.details;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children:
-                                listDeteils!.map((e) => ticketItem(e)).toList(),
+                            children: listDeteils == null
+                                ? []
+                                : listDeteils
+                                    .map((e) => ticketItem(e))
+                                    .toList(),
                           );
                         }
                     }
@@ -110,60 +116,76 @@ class _TicketsPageState extends State<TicketsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
-      child: Container(
-        height: 200,
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              e.issueKey ?? "",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: CircleAvatar(
-                    backgroundColor: bgAvatarCustomer,
-                    maxRadius: 15,
-                    child: Text(
-                      e.customerName!.substring(0, 1),
-                    ),
-                  ),
-                ),
-                Text(e.customerName ?? ""),
-              ],
-            ),
-            Container(
-              height: 80,
-              alignment: Alignment.centerLeft,
-              child: Text(e.summary ?? ""),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 5.0),
-                      child: CircleAvatar(
-                        backgroundColor: RequestTypeColor.mapRequestTypeColor[e.requestTypeName!]??const Color(0xfffbfcfb),
-                        maxRadius: 5,
+      child: InkWell(
+        onTap: () {
+          print(e.id);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TicketsPage(
+                      title: "Open",
+                    )),
+          );
+        },
+        child: Container(
+          height: 200,
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                e.issueKey ?? "",
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: CircleAvatar(
+                      backgroundColor: bgAvatarCustomer,
+                      maxRadius: 15,
+                      child: Text(
+                        e.customerName!.substring(0, 1),
                       ),
                     ),
-                    Text(e.requestTypeName ?? ""),
-                  ],
-                ),
-                Text("Due ${Jiffy(e.resolvedDate ?? "").fromNow()}"),
-              ],
-            ),
-          ],
+                  ),
+                  Text(e.customerName ?? ""),
+                ],
+              ),
+              Container(
+                height: 80,
+                alignment: Alignment.centerLeft,
+                child: Text(e.summary ?? ""),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 5.0),
+                        child: CircleAvatar(
+                          backgroundColor: RequestTypeColor
+                                  .mapRequestTypeColor[e.requestTypeName!] ??
+                              const Color(0xfffbfcfb),
+                          maxRadius: 5,
+                        ),
+                      ),
+                      Text(e.requestTypeName ?? ""),
+                    ],
+                  ),
+                  Text("Due ${Jiffy(e.resolvedDate ?? "").fromNow()}"),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
   Color colorFromString(String str) {
     var hash = 88430;
     for (var i = 0; i < str.length; i++) {

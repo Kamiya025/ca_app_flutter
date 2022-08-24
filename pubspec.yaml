@@ -74,6 +74,13 @@ flutter:
     - assets/fpt_logo.png
     - assets/ca_logo.png
     - assets/bgimage.jpg
+    - assets/reopen_task.png
+    - assets/request.png
+    - assets/task_cancel.png
+    - assets/task_close.png
+    - assets/task_done.png
+    - assets/task_in_progress.png
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

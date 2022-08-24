@@ -1,17 +1,22 @@
 import 'package:ca_app_flutter/src/constant/constant_bottom_navigation.dart';
+import 'package:ca_app_flutter/src/constant/constant_card_empty_data.dart';
 import 'package:ca_app_flutter/src/home/home_viewmodel.dart';
 import 'package:ca_app_flutter/src/home/linechart_view.dart';
 import 'package:ca_app_flutter/src/home/piechart_view.dart';
+import 'package:ca_app_flutter/src/home/projects_view.dart';
 import 'package:ca_app_flutter/src/home/radarchart_view.dart';
 import 'package:ca_app_flutter/src/home/skeleton_home.dart';
 import 'package:ca_app_flutter/src/model/all_tickets_status.dart';
+import 'package:ca_app_flutter/src/model/request.dart';
 import 'package:ca_app_flutter/src/model/status.dart';
+import 'package:ca_app_flutter/src/util/calculator.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:text_scroll/text_scroll.dart';
 import '../Tickets/Tickets_view.dart';
+import '../constant/request_type_color.dart';
 import '../model/data_type_request.dart';
 import '../model/project.dart';
 
@@ -84,8 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    padding: const EdgeInsets.only(top:15, bottom: 15, right: 20, left: 20),
-
+                    padding: const EdgeInsets.only(
+                        top: 15, bottom: 15, right: 20, left: 20),
                     alignment: Alignment.centerLeft,
                     child: const Text(
                       "Dashboard",
@@ -95,122 +100,147 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.white),
                     ),
                   ),
-                  Column(
-                    children: [
-                      //chart radar
-                      StreamBuilder(
-                          stream: homeViewModel.allTicketsStatusStream,
-                          builder: (context,
-                              AsyncSnapshot<AllTicketsStatus> snapshot) {
-                            switch (snapshot.connectionState) {
-                              case ConnectionState.waiting:
-                                return const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(20.0),
-                                    child: SkeletonAvatar(
-                                      style: SkeletonAvatarStyle(
-                                          shape: BoxShape.circle,
-                                          height: 200,
-                                          width: 200),
-                                    ),
-                                  ),
-                                );
-                              default:
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return RadarChartView(
-                                      dataTypeRequest:
-                                          DataTypeRequest.fromRequests(
-                                              snapshot.data!.status!),
-                                      callBack: (i) {
-                                        if (i >= 0) {
-                                          buttonCarouselController
-                                              .animateToPage(i);
-                                        }
-                                      });
-                                }
-                            }
-                          }),
-
-                      StreamBuilder(
-                          stream: homeViewModel.allTicketsStatusStream,
-                          builder: (context,
-                              AsyncSnapshot<AllTicketsStatus> snapshot) {
-                            switch (snapshot.connectionState) {
-                              case ConnectionState.waiting:
-                                return linesView();
-                              default:
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return Column(
-                                    children: [
-
-                                      Container(
-                                        padding: const EdgeInsets.all(20),
-                                        child: Column(
-                                          children: [
-                                            CarouselSlider(
-                                              carouselController:
-                                                  buttonCarouselController,
-                                              options: CarouselOptions(
-                                                viewportFraction: 1,
-                                                height: 160,
-                                                disableCenter: false,
-                                                pageSnapping: true,
-                                              ),
-                                              items: snapshot.data!.status!
-                                                  .map((item) => carouselItem(item))
-                                                  .toList(),
-                                            ),
-                                          ],
-                                        ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        //chart radar
+                        StreamBuilder(
+                            stream: homeViewModel.allTicketsStatusStream,
+                            builder: (context,
+                                AsyncSnapshot<AllTicketsStatus> snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.waiting:
+                                  return const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(20.0),
+                                      child: SkeletonAvatar(
+                                        style: SkeletonAvatarStyle(
+                                            shape: BoxShape.circle,
+                                            height: 200,
+                                            width: 200),
                                       ),
-                                    ],
+                                    ),
                                   );
-                                }
-                            }
-                          }),
-                      //chart pie
-                      StreamBuilder(
-                          stream: homeViewModel.allTicketsStatusStream,
-                          builder: (context,
-                              AsyncSnapshot<AllTicketsStatus> snapshot) {
-                            switch (snapshot.connectionState) {
-                              case ConnectionState.waiting:
-                                return skeletonChart();
-                              default:
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return PieChartSample2(
-                                    data: snapshot.data!.requests ?? [],
-                                  );
-                                }
-                            }
-                          }),
-                      //chart line
-                      StreamBuilder(
-                          stream: homeViewModel.dataTimespentStream,
-                          builder: (context, snapshot) {
-                            switch (snapshot.connectionState) {
-                              case ConnectionState.waiting:
-                                return skeletonChart();
-                              default:
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return LineChartSample2(
-                                    data: snapshot.data as List<double>,
-                                  );
-                                }
-                            }
-                          }),
+                                default:
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else {
+                                    List<Status> status =
+                                        snapshot.data!.status!;
+                                    // List<Status> status = List<Status>.from([]) ;
 
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: StreamBuilder(
+                                    return RadarChartView(
+                                        dataTypeRequest: status.isEmpty
+                                            ? DataTypeRequest(
+                                                [], [1, 1, 1, 1, 1, 1])
+                                            : DataTypeRequest.fromRequests(
+                                                status),
+                                        callBack: (i) {
+                                          if (i >= 0) {
+                                            buttonCarouselController
+                                                .animateToPage(i);
+                                          }
+                                        });
+                                  }
+                              }
+                            }),
+
+                        StreamBuilder(
+                            stream: homeViewModel.allTicketsStatusStream,
+                            builder: (context,
+                                AsyncSnapshot<AllTicketsStatus> snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.waiting:
+                                  return linesView();
+                                default:
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else {
+                                    List<Status> status =
+                                        snapshot.data!.status!;
+                                    // List<Status> status = List<Status>.from([]) ;
+                                    return status.isEmpty
+                                        ? cardData("Ticket type")
+                                        : Column(
+                                            children: [
+                                              CarouselSlider(
+                                                carouselController:
+                                                    buttonCarouselController,
+                                                options: CarouselOptions(
+                                                  viewportFraction: 1,
+                                                  height: 160,
+                                                  disableCenter: false,
+                                                  pageSnapping: true,
+                                                ),
+                                                items: status
+                                                    .map((item) =>
+                                                        carouselItem(item))
+                                                    .toList(),
+                                              ),
+                                            ],
+                                          );
+                                  }
+                              }
+                            }),
+                        const SizedBox(
+                          height: 20,
+                        ),
+
+                        //chart pie
+                        StreamBuilder(
+                            stream: homeViewModel.allTicketsStatusStream,
+                            builder: (context,
+                                AsyncSnapshot<AllTicketsStatus> snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.waiting:
+                                  return skeletonChart();
+                                default:
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else {
+                                    var requests = snapshot.data!.requests;
+                                    // var requests = List<Requests>.from([]);
+                                    return requests!.isEmpty
+                                        ? cardData("Requests")
+                                        : PieChartView(
+                                            data: requests,
+                                          );
+                                  }
+                              }
+                            }),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //chart line
+                        StreamBuilder(
+                            stream: homeViewModel.dataTimespentStream,
+                            builder: (context, snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.waiting:
+                                  return skeletonChart();
+                                default:
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else {
+                                    List<double> timespent =
+                                        snapshot.data as List<double>;
+                                    print("q:$timespent");
+                                    return Calculator.sumListDouble(
+                                                timespent) ==
+                                            0
+                                        ? cardData("Performance")
+                                        : LineChartView(
+                                            data: timespent,
+                                          );
+                                  }
+                              }
+                            }),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        StreamBuilder(
                             stream: homeViewModel.projectsStream,
                             builder: (context,
                                 AsyncSnapshot<List<Project>> snapshot) {
@@ -221,45 +251,24 @@ class _MyHomePageState extends State<MyHomePage> {
                                   if (snapshot.hasError) {
                                     return Text('Error: ${snapshot.error}');
                                   } else {
-                                    return Card(
-                                      elevation: 3,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                      ),
-                                      borderOnForeground: true,
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
-                                            decoration: const BoxDecoration(
-                                              border: Border(
-                                                  bottom: BorderSide(
-                                                      color:
-                                                          Colors.blueAccent)),
+                                    var data = snapshot.data;
+                                    // var data = List<Project>.from([]);
+                                    return data!.isEmpty
+                                        ? cardData("Project")
+                                        : cardData(
+                                            "Project",
+                                            child: Column(
+                                              children: data
+                                                  .map((val) =>
+                                                      projectItemView(val))
+                                                  .toList(),
                                             ),
-                                            alignment: Alignment.centerLeft,
-                                            child: const Text(
-                                              "Projects",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
-                                            ),
-                                          ),
-                                          Column(
-                                            children: snapshot.data!
-                                                .map((val) =>
-                                                    projectItemView(val))
-                                                .toList(),
-                                          ),
-                                        ],
-                                      ),
-                                    );
+                                          );
                                   }
                               }
                             }),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -272,134 +281,63 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget carouselItem(Status item) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => TicketsPage(
-                      title: item.statusName!,
-                    )),
-          );
-        },
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
-              decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.blueAccent)),
-              ),
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                "Ticket type",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(18),
-              child: Row(
-
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TicketsPage(
+                    title: item.statusName!,
+                  )),
+        );
+      },
+      child: cardData(
+        "Ticket type",
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Icon(
-                        Icons.account_tree,
-                        size: 25,
-                        color: Color.fromRGBO(149, 170, 201, 1),
-                      ),
-                      Hero(
-                        tag: "name_tickets",
-                        child: Text(
-                          item.statusName!,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            color: Color.fromRGBO(149, 170, 201, 1.0),
-                          ),
-                        ),
-                      ),
-                      // const Icon(
-                      //   Icons.account_tree,
-                      //   size: 35,
-                      //   color: Color.fromRGBO(149, 170, 201, 1),
-                      // ),
-                    ],
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Image(
+                        image: RequestTypeColor.mapStatusImageIcon[
+                                item.statusName ?? "OPEN_REQUEST"] ??
+                            const AssetImage("assets/request.png"),
+                      width: 30,
+                      color: const Color.fromRGBO(149, 170, 201, 1.0),
+                    ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 5),
+                  Hero(
+                    tag: "name_tickets",
                     child: Text(
-                      "${item.quantity!.toInt()}",
+                      item.statusName!,
                       style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
+                        fontSize: 15,
+                        color: Color.fromRGBO(149, 170, 201, 1.0),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+              Container(
+                margin: const EdgeInsets.only(top: 5),
+                child: Text(
+                  "${item.quantity!.toInt()}",
+                  style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-}
-
-Widget projectItemView(Project val) {
-  return Container(
-    margin: const EdgeInsets.only(left: 15, right: 15),
-    decoration: const BoxDecoration(
-      border: Border(bottom: BorderSide(color: Colors.grey)),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.only(top: 15.0, bottom: 15),
-      child: Row(
-        children: [
-          Flexible(
-            flex: 2,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(
-                val.image ?? "",
-                scale: 16,
-              ),
-            ),
-          ),
-          Flexible(
-            flex: 8,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    val.projectCode ?? "",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: TextScroll(
-                      val.name ?? "",
-                      intervalSpaces: 10,
-                      mode: TextScrollMode.endless,
-                      delayBefore: const Duration(milliseconds: 2000),
-                      velocity: const Velocity(pixelsPerSecond: Offset(20, 30)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }
