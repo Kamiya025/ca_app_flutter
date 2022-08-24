@@ -30,7 +30,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
     double averages = Calculator.averagesListFlSpot(_mainData).toDouble();
     _datasAvg = _mainData.map((e) => FlSpot(e.x, averages)).toList();
     _maxMainData = Calculator.maxFlSpot(_mainData);
-    print(_maxMainData);
   }
 
   void _changeView() {
@@ -62,23 +61,23 @@ class _LineChartSample2State extends State<LineChartSample2> {
               alignment: Alignment.centerLeft,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const Text(
+                children: const <Widget>[
+                  Text(
                     "Performance",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: TextButton(
-                      onPressed: _changeView,
-                      child: Text(
-                        showAvg ? 'Normal' : "Avg",
-                        style: const TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(right: 10),
+                  //   child: TextButton(
+                  //     onPressed: _changeView,
+                  //     child: Text(
+                  //       showAvg ? 'Normal' : "Avg",
+                  //       style: const TextStyle(
+                  //         fontSize: 15,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -106,7 +105,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     Widget text;
-    text = const Text('');
+    text = Text("${(value+1).toInt()}");
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 8.0,
@@ -115,14 +114,17 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color(0xff67727d),
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-    String text = "";
 
-    return Text(text, style: style, textAlign: TextAlign.center);
+    const style = TextStyle(fontSize: 10);
+
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: Text(value.toInt().toString(),
+        style: style,
+      ),
+    );
+
   }
 
   LineChartData mainData() {
@@ -145,7 +147,10 @@ class _LineChartSample2State extends State<LineChartSample2> {
         ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: false,
+            showTitles: true,
+            getTitlesWidget: leftTitleWidgets,
+            interval: _maxMainData/5,
+            reservedSize: 46,
           ),
         ),
       ),
@@ -196,7 +201,10 @@ class _LineChartSample2State extends State<LineChartSample2> {
         ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: false,
+            showTitles: true,
+            getTitlesWidget: leftTitleWidgets,
+            interval: _maxMainData/5,
+            reservedSize: 46,
           ),
         ),
         topTitles: AxisTitles(
@@ -250,4 +258,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
       ],
     );
   }
+
+
 }

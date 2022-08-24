@@ -2,13 +2,13 @@ class Details {
   int? id;
   String? customerName;
   int? projectId;
-  Null? categoryId;
+  // Null? categoryId;
   String? email;
   String? phone;
   String? dateCreate;
   String? resolvedDate;
   String? summary;
-  Null? descriptionByCustomer;
+  // Null? descriptionByCustomer;
   int? groupId;
   int? priorityId;
   // Scope? scope;
@@ -25,13 +25,13 @@ class Details {
       {this.id,
         this.customerName,
         this.projectId,
-        this.categoryId,
+        // this.categoryId,
         this.email,
         this.phone,
         this.dateCreate,
         this.resolvedDate,
         this.summary,
-        this.descriptionByCustomer,
+        // this.descriptionByCustomer,
         this.groupId,
         this.priorityId,
         // this.scope,
@@ -48,13 +48,13 @@ class Details {
     id = json['id'];
     customerName = json['customer_name'];
     projectId = json['project_id'];
-    categoryId = json['category_id'];
+    // categoryId = json['category_id'];
     email = json['email'];
     phone = json['phone'];
     dateCreate = json['date_create'];
     resolvedDate = json['resolved_date'];
     summary = json['summary'];
-    descriptionByCustomer = json['description_by_customer'];
+    // descriptionByCustomer = json['description_by_customer'];
     groupId = json['group_id'];
     priorityId = json['priority_id'];
     // scope = json['scope'] != null ? new Scope.fromJson(json['scope']) : null;
@@ -73,13 +73,13 @@ class Details {
     data['id'] = id;
     data['customer_name'] = customerName;
     data['project_id'] = projectId;
-    data['category_id'] = categoryId;
+    // data['category_id'] = categoryId;
     data['email'] = email;
     data['phone'] = phone;
     data['date_create'] = dateCreate;
     data['resolved_date'] = resolvedDate;
     data['summary'] = summary;
-    data['description_by_customer'] = descriptionByCustomer;
+    // data['description_by_customer'] = descriptionByCustomer;
     data['group_id'] = groupId;
     data['priority_id'] = priorityId;
     // if (scope != null) {

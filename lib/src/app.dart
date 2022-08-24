@@ -1,5 +1,7 @@
-import 'package:ca_app_flutter/src/login/login_view.dart';
 import 'package:flutter/material.dart';
+
+import 'login/login_view.dart';
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

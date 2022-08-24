@@ -49,9 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: '',
       logo: const AssetImage("assets/fpt_logo.png"),
-      footer: "",
       userType: LoginUserType.name,
       hideForgotPasswordButton: true,
       theme: LoginTheme(
@@ -69,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onSubmitAnimationCompleted: () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MyHomePage(title: "Home")),
+          MaterialPageRoute(builder: (context) => const MyHomePage()),
         );
       },
       onRecoverPassword: _recoverPassword,

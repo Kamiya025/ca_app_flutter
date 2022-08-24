@@ -45,6 +45,8 @@ dependencies:
   carousel_slider: ^4.1.1
   skeletons: ^0.0.3
   rxdart: ^0.27.5
+  text_scroll: ^0.1.0
+  jiffy: ^5.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -71,6 +73,7 @@ flutter:
   assets:
     - assets/fpt_logo.png
     - assets/ca_logo.png
+    - assets/bgimage.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

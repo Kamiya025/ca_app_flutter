@@ -17,7 +17,7 @@ class Tickets {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['type'] = type;
     if (details != null) {
       data['details'] = details!.map((v) => v.toJson()).toList();

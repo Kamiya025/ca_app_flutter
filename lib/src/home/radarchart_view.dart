@@ -22,6 +22,12 @@ class _RadarChartViewState extends State<RadarChartView> {
   int selectedDataSetIndex = -1;
   double angleValue = 0;
   bool relativeAngleMode = true;
+  List<double> data = [0, 0, 0, 0, 0, 0];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +38,11 @@ class _RadarChartViewState extends State<RadarChartView> {
           aspectRatio: 1.3,
           child: RadarChart(
             RadarChartData(
-              radarTouchData: RadarTouchData(
-
-                  touchCallback: (FlTouchEvent event, response) {
-                    widget.callBack(response?.touchedSpot?.touchedRadarEntryIndex ?? -1);
-                  }),
+              radarTouchData:
+                  RadarTouchData(touchCallback: (FlTouchEvent event, response) {
+                widget.callBack(
+                    response?.touchedSpot?.touchedRadarEntryIndex ?? -1);
+              }),
               dataSets: showingDataSets(),
               radarShape: RadarShape.circle,
               radarBackgroundColor: Colors.transparent,
@@ -65,6 +71,7 @@ class _RadarChartViewState extends State<RadarChartView> {
               ),
             ),
             swapAnimationDuration: const Duration(milliseconds: 2400),
+            swapAnimationCurve: Curves.bounceOut,
           ),
         ),
       ),
@@ -100,6 +107,8 @@ class _RadarChartViewState extends State<RadarChartView> {
       ),
     ];
   }
+
+
 }
 
 class RawDataSet {
